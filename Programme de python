@@ -1,0 +1,40 @@
+def table_verite(fonction_logique):
+    variables = sorted(set([char for char in fonction_logique if char.isalpha()]))
+    print("Table de vérité de la fonction logique", fonction_logique)
+    print(" ".join(variables), "|", "Résultat")
+    print("-" * (len(" ".join(variables)) + len("Résultat") + 3))
+
+    for i in range(2**len(variables)):
+        valeurs = {}
+        for j, var in enumerate(variables):
+            valeurs[var] = (i >> (len(variables)-1-j)) & 1
+        resultat = eval(fonction_logique, valeurs)
+        print(" ".join(str(valeurs[var]) for var in variables), "|", resultat)
+
+def formes_canoniques(fonction_logique):
+    formes = {"disjonctive": "", "conjonctive": ""}
+    variables = sorted(set([char for char in fonction_logique if char.isalpha()]))
+    for var in variables:
+        forme_disjonctive = ""
+        forme_conjonctive = ""
+        for i, bit in enumerate(range(2**len(variables))):
+            if (bit >> (len(variables)-1-variables.index(var))) & 1:
+                forme_disjonctive += var
+                forme_conjonctive += "~" + var
+            else:
+                forme_disjonctive += "~" + var
+                forme_conjonctive += var
+            if i != 2**len(variables)-1:
+                forme_disjonctive += "|"
+                forme_conjonctive += "&"
+        formes["disjonctive"] += "(" + forme_disjonctive + ")"
+        formes["conjonctive"] += "(" + forme_conjonctive + ")"
+        if var != variables[-1]:
+            formes["disjonctive"] += "|"
+            formes["conjonctive"] += "&"
+    print("Forme canonique disjonctive:", formes["disjonctive"])
+    print("Forme canonique conjonctive:", formes["conjonctive"])
+
+fonction_logique = input("Entrez votre fonction logique en utilisant les opérateurs logiques (& pour ET, | pour OU, ~ pour NON): ")
+table_verite(fonction_logique)
+formes_canoniques(fonction_logique)
